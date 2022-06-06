@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { FormControl, Button, InputLabel, Input } from '@mui/material';
 import Todo from './component/Todo';
 import db from '../src/firebase/firebase';
-import { addDoc, collection, getDocs } from 'firebase/firestore';
+import { addDoc, collection, getDocs, serverTimestamp, orderBy, query } from 'firebase/firestore';
 
 function App() {
 
@@ -18,7 +18,9 @@ function App() {
 
   const getTodos = () => {
     const todoCollectionRef = collection(db, 'todos');
-    getDocs(todoCollectionRef)
+    const q = query(todoCollectionRef, orderBy('timestamp', 'asc'));
+
+    getDocs(q)
     .then(response => {
         const todos_get = response.docs.map(doc => ({
             data: doc.data().todo,
@@ -35,7 +37,7 @@ function App() {
     event.preventDefault();
 
     const todoCollectionRef = collection(db, 'todos');
-    addDoc(todoCollectionRef, { todo: input })
+    addDoc(todoCollectionRef, { todo: input, timestamp: serverTimestamp()})
     .then(response => {
       console.log(response)
     })
