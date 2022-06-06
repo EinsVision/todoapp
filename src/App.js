@@ -1,13 +1,35 @@
 import './App.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormControl, Button, InputLabel, Input } from '@mui/material';
 import Todo from './component/Todo';
+import db from '../src/firebase/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 function App() {
 
-  const [todos, setTodos] = useState(['Cooking Pasta 🍝', 'Take a Walk 🏃‍♂️', 'Fitting Glasses 🕶️ 👓']);
+  const [todos, setTodos] = useState([]);
   // todos: short term memory
   const [input, setInput] = useState('');
+
+  // when the app loads, we need to listen to the database and fetch new todos as they get added/remove 
+  useEffect( () => {
+    getTodos();
+  }, []);
+
+  function getTodos() {
+    const todoCollectionRef = collection(db, 'todos');
+    getDocs(todoCollectionRef)
+    .then(response => {
+        const todos_get = response.docs.map(doc => ({
+            data: doc.data().todo,
+            id: doc.id,
+        }))
+        setTodos(response.docs.map(doc => (doc.data().todo))); // this part is that getting db from firebase
+        // setTodos(response.docs.map(doc => (doc.id)));
+        console.log(todos_get)
+    })
+    .catch(error => console.log(error.message))
+  }
 
   const addTodo = (event) =>{
     event.preventDefault();
