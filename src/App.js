@@ -14,11 +14,11 @@ function App() {
   // when the app loads, we need to listen to the database and fetch new todos as they get added/remove 
   useEffect( () => {
     getTodos();
-  }, []);
+  }, [input]);
 
   const getTodos = () => {
     const todoCollectionRef = collection(db, 'todos');
-    const q = query(todoCollectionRef, orderBy('timestamp', 'asc'));
+    const q = query(todoCollectionRef, orderBy('timestamp', 'desc'));
 
     getDocs(q)
     .then(response => {
