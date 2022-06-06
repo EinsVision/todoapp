@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { FormControl, Button, InputLabel, Input } from '@mui/material';
 import Todo from './component/Todo';
 import db from '../src/firebase/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { addDoc, collection, getDocs } from 'firebase/firestore';
 
 function App() {
 
@@ -16,7 +16,7 @@ function App() {
     getTodos();
   }, []);
 
-  function getTodos() {
+  const getTodos = () => {
     const todoCollectionRef = collection(db, 'todos');
     getDocs(todoCollectionRef)
     .then(response => {
@@ -33,6 +33,16 @@ function App() {
 
   const addTodo = (event) =>{
     event.preventDefault();
+
+    const todoCollectionRef = collection(db, 'todos');
+    addDoc(todoCollectionRef, { todo: input })
+    .then(response => {
+      console.log(response)
+    })
+    .catch(error => {
+      console.log(error.message)
+    })
+
     setTodos([...todos, input]); //input: here is new todo.
     setInput('');
   }
